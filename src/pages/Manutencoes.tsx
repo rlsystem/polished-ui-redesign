@@ -9,7 +9,10 @@ import {
   User,
   CheckCircle2,
   Trash2,
-  Filter,
+  Clock,
+  ChevronRight,
+  Eye,
+  Edit,
 } from "lucide-react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -46,6 +49,7 @@ const manutencoes = [
     status: "agendada" as const,
     descricao: "Troca de óleo, verificação de bateria, freios e sistemas de segurança",
     responsavel: null,
+    diasRestantes: 39,
   },
   {
     id: 2,
@@ -58,6 +62,7 @@ const manutencoes = [
     status: "agendada" as const,
     descricao: "Limpeza completa dos filtros, verificação de pressão do gás refrigerante",
     responsavel: null,
+    diasRestantes: 25,
   },
   {
     id: 3,
@@ -70,6 +75,7 @@ const manutencoes = [
     status: "agendada" as const,
     descricao: "Checar termostato, borrachas de vedação e limpeza do condensador",
     responsavel: "ADRIAN DA SILVA BROCHADO",
+    diasRestantes: 23,
   },
   {
     id: 4,
@@ -82,6 +88,7 @@ const manutencoes = [
     status: "concluido" as const,
     descricao: "Substituição do compressor danificado",
     responsavel: "JOÃO PEREIRA",
+    diasRestantes: null,
   },
 ];
 
@@ -127,7 +134,7 @@ export default function Manutencoes() {
 
       {/* Filters */}
       <div className="bg-card rounded-lg shadow-card border border-border/50 p-4 mb-6">
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -138,7 +145,7 @@ export default function Manutencoes() {
             />
           </div>
           <Select defaultValue="todos">
-            <SelectTrigger className="w-full md:w-[180px]">
+            <SelectTrigger className="w-full lg:w-[160px]">
               <SelectValue placeholder="Todos os Tipos" />
             </SelectTrigger>
             <SelectContent>
@@ -148,7 +155,7 @@ export default function Manutencoes() {
             </SelectContent>
           </Select>
           <Select defaultValue="todas">
-            <SelectTrigger className="w-full md:w-[180px]">
+            <SelectTrigger className="w-full lg:w-[160px]">
               <SelectValue placeholder="Todas as Filiais" />
             </SelectTrigger>
             <SelectContent>
@@ -158,22 +165,22 @@ export default function Manutencoes() {
               <SelectItem value="cd">CENTRO DISTRIBUIÇÃO</SelectItem>
             </SelectContent>
           </Select>
-          <div className="flex gap-2">
-            <Input type="date" className="w-full md:w-auto" placeholder="dd/mm/aaaa" />
-            <span className="flex items-center text-muted-foreground text-sm">até</span>
-            <Input type="date" className="w-full md:w-auto" placeholder="dd/mm/aaaa" />
+          <div className="flex gap-2 items-center">
+            <Input type="date" className="w-full lg:w-[140px]" />
+            <span className="text-muted-foreground text-sm shrink-0">até</span>
+            <Input type="date" className="w-full lg:w-[140px]" />
           </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-4 border-b border-border">
+      <div className="flex gap-1 mb-4 border-b border-border overflow-x-auto">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={cn(
-              "px-4 py-2.5 text-sm font-medium transition-colors relative",
+              "px-4 py-2.5 text-sm font-medium transition-colors relative whitespace-nowrap",
               activeTab === tab.id
                 ? "text-primary"
                 : "text-muted-foreground hover:text-foreground"
@@ -197,72 +204,101 @@ export default function Manutencoes() {
       <div className="flex items-center gap-4 mb-4 text-sm">
         <span className="text-muted-foreground">Legenda:</span>
         <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-full bg-success" />
+          <div className="w-2.5 h-2.5 rounded-full bg-success" />
           <span className="text-muted-foreground">Preventiva</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-2 h-2 rounded-full bg-warning" />
+          <div className="w-2.5 h-2.5 rounded-full bg-warning" />
           <span className="text-muted-foreground">Corretiva</span>
         </div>
       </div>
 
-      {/* List */}
-      <div className="space-y-3">
+      {/* Cards Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
         {manutencoes.map((item) => (
           <div
             key={item.id}
             className={cn(
-              "bg-card rounded-lg shadow-card border border-border/50 p-4 transition-shadow hover:shadow-card-hover",
+              "bg-card rounded-xl shadow-card border border-border/50 overflow-hidden transition-all hover:shadow-card-hover group cursor-pointer",
               "border-l-4",
               item.tipo === "preventiva" ? "border-l-success" : "border-l-warning"
             )}
           >
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-2 flex-wrap">
-                  <h3 className="font-medium text-foreground">{item.titulo}</h3>
+            {/* Header */}
+            <div className="p-4 border-b border-border/50">
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <h3 className="font-semibold text-foreground line-clamp-2 leading-snug">{item.titulo}</h3>
+                <div className="flex gap-1.5 shrink-0">
                   <StatusBadge status={item.tipo} />
                   <StatusBadge status={item.status} />
                 </div>
-                
-                <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2 flex-wrap">
-                  <span className="flex items-center gap-1.5">
-                    <Wrench className="h-3.5 w-3.5" />
-                    {item.equipamento}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <MapPin className="h-3.5 w-3.5" />
-                    {item.local}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Calendar className="h-3.5 w-3.5" />
-                    {item.data}
-                  </span>
-                  {item.custo && (
-                    <span className="flex items-center gap-1.5">
-                      <DollarSign className="h-3.5 w-3.5" />
-                      R$ {item.custo.toFixed(2).replace('.', ',')}
-                    </span>
-                  )}
-                  {item.responsavel && (
-                    <span className="flex items-center gap-1.5">
-                      <User className="h-3.5 w-3.5" />
-                      {item.responsavel}
-                    </span>
-                  )}
-                </div>
+              </div>
+              
+              <div className="flex items-center gap-1.5 text-sm text-primary">
+                <Wrench className="h-3.5 w-3.5" />
+                <span className="font-medium">{item.equipamento}</span>
+              </div>
+            </div>
 
-                <p className="text-sm text-muted-foreground">{item.descricao}</p>
+            {/* Body */}
+            <div className="p-4 space-y-3">
+              <p className="text-sm text-muted-foreground line-clamp-2">{item.descricao}</p>
+              
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <MapPin className="h-3.5 w-3.5" />
+                  {item.local}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="h-3.5 w-3.5" />
+                  {item.data}
+                </span>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              {item.responsavel && (
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <User className="h-3.5 w-3.5" />
+                  <span>{item.responsavel}</span>
+                </div>
+              )}
+
+              {item.custo && (
+                <div className="flex items-center gap-1.5 text-sm font-medium text-foreground">
+                  <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span>R$ {item.custo.toFixed(2).replace('.', ',')}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-4 py-3 bg-muted/30 border-t border-border/50 flex items-center justify-between">
+              {item.diasRestantes !== null ? (
+                <div className="flex items-center gap-1.5 text-xs">
+                  <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className={cn(
+                    "font-medium",
+                    item.diasRestantes <= 7 ? "text-warning" : "text-muted-foreground"
+                  )}>
+                    {item.diasRestantes} dias restantes
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5 text-xs text-success">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  <span className="font-medium">Concluída</span>
+                </div>
+              )}
+
+              <div className="flex items-center gap-1">
                 {item.status === "agendada" && (
-                  <Button variant="outline" size="sm" className="gap-1.5 text-success border-success/30 hover:bg-success/10 hover:text-success">
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-success hover:text-success hover:bg-success/10">
                     <CheckCircle2 className="h-4 w-4" />
-                    Concluir
                   </Button>
                 )}
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                  <Eye className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>

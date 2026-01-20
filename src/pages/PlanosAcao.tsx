@@ -188,13 +188,18 @@ export default function PlanosAcao() {
             key={plano.id}
             onClick={() => handleOpenPlano(plano)}
             className={cn(
-              "bg-card rounded-lg shadow-card border border-border/50 overflow-hidden transition-all hover:shadow-card-hover text-left",
+              "bg-card rounded-xl shadow-card border border-border/50 overflow-hidden transition-all hover:shadow-card-hover text-left",
               "border-t-4",
               plano.prioridade === "critica" ? "border-t-destructive" : 
               plano.prioridade === "alta" ? "border-t-warning" : "border-t-info"
             )}
           >
             <div className="p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <StatusBadge status={plano.status} />
+                <StatusBadge status={plano.prioridade} />
+              </div>
+
               <h3 className="font-semibold text-foreground mb-2 line-clamp-2">
                 {plano.titulo}
               </h3>
@@ -208,15 +213,23 @@ export default function PlanosAcao() {
                 {plano.descricao}
               </p>
 
-              <div className="flex items-center gap-2 mb-4">
-                <StatusBadge status={plano.status} />
-                <StatusBadge status={plano.prioridade} />
-              </div>
-
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
                 <User className="h-3.5 w-3.5" />
                 <span>{plano.responsavel || "Não definido"}</span>
               </div>
+
+              {/* Prazo em destaque */}
+              {plano.prazo && (
+                <div className="mt-3 pt-3 border-t border-border/50">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">Prazo</span>
+                    <div className="flex items-center gap-1.5 text-sm font-medium text-foreground">
+                      <Clock className="h-3.5 w-3.5 text-warning" />
+                      {new Date(plano.prazo).toLocaleDateString("pt-BR")}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </button>
         ))}

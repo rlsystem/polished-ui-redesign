@@ -4,8 +4,6 @@ import {
   Bell, 
   AlertTriangle,
   CheckCircle2,
-  Clock,
-  TrendingUp,
   Users,
   Building2,
   Calendar
@@ -15,6 +13,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { StatCard } from "@/components/cards/StatCard";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
+import { AIChatPanel } from "@/components/chat/AIChatPanel";
 
 const recentActivities = [
   {
@@ -109,47 +108,11 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Content Grid */}
+      {/* Content Grid with AI Chat */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Activity */}
-        <div className="lg:col-span-2 bg-card rounded-lg shadow-card border border-border/50">
-          <div className="p-5 border-b border-border">
-            <h2 className="font-semibold text-foreground">Atividades Recentes</h2>
-          </div>
-          <div className="divide-y divide-border">
-            {recentActivities.map((activity) => (
-              <div key={activity.id} className="p-4 hover:bg-muted/30 transition-colors">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="font-medium text-sm text-foreground truncate">
-                        {activity.title}
-                      </p>
-                      <StatusBadge status={activity.status} />
-                    </div>
-                    {activity.description && (
-                      <p className="text-sm text-muted-foreground truncate">
-                        {activity.description}
-                      </p>
-                    )}
-                    {activity.location && (
-                      <p className="text-sm text-muted-foreground truncate">
-                        {activity.location}
-                      </p>
-                    )}
-                  </div>
-                  <span className="text-xs text-muted-foreground whitespace-nowrap">
-                    {activity.time}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="p-4 border-t border-border">
-            <Button variant="ghost" className="w-full text-primary hover:text-primary">
-              Ver todas as atividades
-            </Button>
-          </div>
+        {/* AI Chat Panel */}
+        <div className="lg:col-span-2">
+          <AIChatPanel />
         </div>
 
         {/* Pending Audits */}
@@ -179,6 +142,47 @@ export default function Dashboard() {
               Ver todas
             </Button>
           </div>
+        </div>
+      </div>
+
+      {/* Recent Activity Section */}
+      <div className="mt-6 bg-card rounded-lg shadow-card border border-border/50">
+        <div className="p-5 border-b border-border">
+          <h2 className="font-semibold text-foreground">Atividades Recentes</h2>
+        </div>
+        <div className="divide-y divide-border">
+          {recentActivities.map((activity) => (
+            <div key={activity.id} className="p-4 hover:bg-muted/30 transition-colors">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="font-medium text-sm text-foreground truncate">
+                      {activity.title}
+                    </p>
+                    <StatusBadge status={activity.status} />
+                  </div>
+                  {activity.description && (
+                    <p className="text-sm text-muted-foreground truncate">
+                      {activity.description}
+                    </p>
+                  )}
+                  {activity.location && (
+                    <p className="text-sm text-muted-foreground truncate">
+                      {activity.location}
+                    </p>
+                  )}
+                </div>
+                <span className="text-xs text-muted-foreground whitespace-nowrap">
+                  {activity.time}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="p-4 border-t border-border">
+          <Button variant="ghost" className="w-full text-primary hover:text-primary">
+            Ver todas as atividades
+          </Button>
         </div>
       </div>
 
