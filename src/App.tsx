@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Manutencoes from "./pages/Manutencoes";
 import Auditorias from "./pages/Auditorias";
+import HistoricoAuditorias from "./pages/HistoricoAuditorias";
 import Checklists from "./pages/Checklists";
 import NovoChecklist from "./pages/NovoChecklist";
 import EditarChecklist from "./pages/EditarChecklist";
@@ -14,6 +15,7 @@ import Avisos from "./pages/Avisos";
 import Agendamentos from "./pages/Agendamentos";
 import BensEquipamentos from "./pages/BensEquipamentos";
 import NovoPatrimonio from "./pages/NovoPatrimonio";
+import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,9 +27,11 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/login" element={<Login />} />
           <Route path="/" element={<Dashboard />} />
           <Route path="/manutencoes" element={<Manutencoes />} />
           <Route path="/auditorias" element={<Auditorias />} />
+          <Route path="/auditorias/historico" element={<HistoricoAuditorias />} />
           <Route path="/checklists" element={<Checklists />} />
           <Route path="/checklists/novo" element={<NovoChecklist />} />
           <Route path="/checklists/:id/editar" element={<EditarChecklist />} />
