@@ -7,14 +7,15 @@ import {
   Plus,
   MoreVertical,
   MessageSquare,
-  Paperclip,
+  Camera,
   Zap,
   Link2,
+  Layers,
+  GripVertical,
 } from "lucide-react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -32,12 +33,12 @@ const tabs = [
 ];
 
 const tiposItem = [
-  "Avaliativo (Conforme/NC)",
-  "Sim/Não",
-  "Texto Livre",
-  "Numérico",
-  "Data",
-  "Seleção Múltipla",
+  { value: "avaliativo", label: "Avaliativo (Conforme/Não Conforme)" },
+  { value: "sim_nao", label: "Sim/Não" },
+  { value: "texto", label: "Texto Livre" },
+  { value: "numerico", label: "Numérico" },
+  { value: "data", label: "Data" },
+  { value: "selecao", label: "Seleção Múltipla" },
 ];
 
 interface ChecklistItem {
@@ -46,7 +47,9 @@ interface ChecklistItem {
   tipo: string;
   peso: number;
   obrigatorio: boolean;
-  complementos: string[];
+  comentario: boolean;
+  foto: boolean;
+  planoAcao: boolean;
   ativo?: string;
 }
 
@@ -68,18 +71,32 @@ const initialAreas: Area[] = [
       {
         id: 1,
         pergunta: "Limpeza e organização do açougues",
-        tipo: "Avaliativo (Conforme/NC)",
+        tipo: "avaliativo",
         peso: 1,
-        obrigatorio: false,
-        complementos: ["Comentário", "Anexos"],
+        obrigatorio: true,
+        comentario: true,
+        foto: true,
+        planoAcao: true,
       },
       {
         id: 2,
         pergunta: "Validades e procedências conforme solicitação da vigilâncias",
-        tipo: "Avaliativo (Conforme/NC)",
+        tipo: "avaliativo",
         peso: 1,
         obrigatorio: true,
-        complementos: ["Plano de Ação"],
+        comentario: false,
+        foto: true,
+        planoAcao: true,
+      },
+      {
+        id: 3,
+        pergunta: "Equipamentos de proteção individual em uso",
+        tipo: "sim_nao",
+        peso: 2,
+        obrigatorio: false,
+        comentario: true,
+        foto: false,
+        planoAcao: false,
       },
     ],
   },
@@ -109,6 +126,14 @@ export default function EditarChecklist() {
           }
         : area
     ));
+  };
+
+  const toggleComplement = (areaId: number, itemId: number, field: 'comentario' | 'foto' | 'planoAcao') => {
+    const area = areas.find(a => a.id === areaId);
+    const item = area?.itens.find(i => i.id === itemId);
+    if (item) {
+      updateItem(areaId, itemId, { [field]: !item[field] });
+    }
   };
 
   return (
@@ -160,10 +185,10 @@ export default function EditarChecklist() {
           {areas.map((area) => (
             <div
               key={area.id}
-              className="bg-card rounded-lg shadow-card border-2 border-primary/20 overflow-hidden"
+              className="bg-card rounded-xl shadow-card border border-border/50 overflow-hidden"
             >
               {/* Area Header */}
-              <div className="flex items-center justify-between p-4 border-b border-border bg-muted/30">
+              <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-muted/30">
                 <button
                   onClick={() => toggleArea(area.id)}
                   className="flex items-center gap-3 text-left"
@@ -173,13 +198,14 @@ export default function EditarChecklist() {
                   ) : (
                     <ChevronDown className="h-5 w-5 text-muted-foreground" />
                   )}
+                  <Layers className="h-5 w-5 text-primary" />
                   <span className="font-semibold text-foreground">{area.nome}</span>
-                </button>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-muted-foreground">
+                  <span className="ml-2 px-2.5 py-0.5 text-xs font-medium bg-muted text-muted-foreground rounded-full">
                     {area.itens.length} itens
                   </span>
-                  <Button variant="outline" size="sm" className="gap-1.5">
+                </button>
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="sm" className="gap-1.5 text-primary hover:text-primary hover:bg-primary/10">
                     <Plus className="h-4 w-4" />
                     Novo Item
                   </Button>
@@ -191,188 +217,203 @@ export default function EditarChecklist() {
 
               {/* Area Content */}
               {area.isOpen && (
-                <div className="p-6">
-                  {/* Area Info */}
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-foreground mb-1">
-                      {area.nome}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">{area.descricao}</p>
-                  </div>
+                <div className="p-5 space-y-3">
+                  {area.itens.map((item, index) => (
+                    <div
+                      key={item.id}
+                      className={cn(
+                        "rounded-xl transition-all overflow-hidden",
+                        editingItem === item.id 
+                          ? "border-2 border-primary bg-card shadow-lg" 
+                          : "border border-border/60 bg-muted/20 hover:bg-muted/40"
+                      )}
+                    >
+                      {editingItem === item.id ? (
+                        <div className="p-6">
+                          {/* Pergunta Section */}
+                          <div className="space-y-3 mb-6">
+                            <div className="flex items-center justify-between">
+                              <Label className="text-xs font-semibold text-primary uppercase tracking-wider">
+                                Pergunta
+                              </Label>
+                              <span className="text-xs text-muted-foreground">
+                                {item.pergunta.length}/1000
+                              </span>
+                            </div>
+                            <Input
+                              value={item.pergunta}
+                              onChange={(e) =>
+                                updateItem(area.id, item.id, { pergunta: e.target.value })
+                              }
+                              className="text-base h-12 border-2 border-primary/30 focus:border-primary bg-background"
+                              placeholder="Digite a pergunta do item..."
+                            />
+                          </div>
 
-                  {/* Items */}
-                  <div className="space-y-4">
-                    {area.itens.map((item, index) => (
-                      <div
-                        key={item.id}
-                        className={cn(
-                          "border border-border rounded-lg transition-all",
-                          editingItem === item.id ? "border-primary bg-card shadow-md" : "bg-muted/20"
-                        )}
-                      >
-                        {editingItem === item.id ? (
-                          <div className="p-5 space-y-5">
-                            {/* Pergunta */}
-                            <div className="space-y-2">
-                              <div className="flex items-center justify-between">
-                                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                  Pergunta do Item
-                                </Label>
-                                <span className="text-xs text-muted-foreground">
-                                  {item.pergunta.length}/1000
-                                </span>
-                              </div>
-                              <Input
-                                value={item.pergunta}
-                                onChange={(e) =>
-                                  updateItem(area.id, item.id, { pergunta: e.target.value })
+                          {/* Tipo e Peso */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+                            <div className="space-y-2.5">
+                              <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                Tipo de Resposta
+                              </Label>
+                              <Select
+                                value={item.tipo}
+                                onValueChange={(value) =>
+                                  updateItem(area.id, item.id, { tipo: value })
                                 }
-                                className="text-base"
-                              />
-                            </div>
-
-                            {/* Tipo e Peso */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                  Tipo
-                                </Label>
-                                <Select
-                                  value={item.tipo}
-                                  onValueChange={(value) =>
-                                    updateItem(area.id, item.id, { tipo: value })
-                                  }
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {tiposItem.map((tipo) => (
-                                      <SelectItem key={tipo} value={tipo}>
-                                        {tipo}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <div className="space-y-2">
-                                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                  Peso*
-                                </Label>
-                                <Input
-                                  type="number"
-                                  min={1}
-                                  value={item.peso}
-                                  onChange={(e) =>
-                                    updateItem(area.id, item.id, { peso: parseInt(e.target.value) || 1 })
-                                  }
-                                />
-                              </div>
-                            </div>
-
-                            {/* Complementos */}
-                            <div className="space-y-2">
-                              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                Complementos
-                              </Label>
-                              <div className="flex flex-wrap gap-2">
-                                <Button
-                                  variant={item.complementos.includes("Comentário") ? "secondary" : "outline"}
-                                  size="sm"
-                                  className="gap-1.5"
-                                >
-                                  <MessageSquare className="h-4 w-4" />
-                                  Comentário
-                                </Button>
-                                <Button
-                                  variant={item.complementos.includes("Anexos") ? "secondary" : "outline"}
-                                  size="sm"
-                                  className="gap-1.5"
-                                >
-                                  <Paperclip className="h-4 w-4" />
-                                  Anexos
-                                </Button>
-                                <Button
-                                  variant={item.complementos.includes("Plano de Ação") ? "secondary" : "outline"}
-                                  size="sm"
-                                  className="gap-1.5"
-                                >
-                                  <Zap className="h-4 w-4" />
-                                  Plano de Ação
-                                </Button>
-                              </div>
-                            </div>
-
-                            {/* Vincular Ativo */}
-                            <div className="space-y-2">
-                              <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
-                                <Link2 className="h-3.5 w-3.5" />
-                                Vincular Ativo
-                              </Label>
-                              <Select>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Selecione um ativo..." />
+                              >
+                                <SelectTrigger className="h-12 bg-muted/50">
+                                  <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="empilhadeira">Empilhadeira Elétrica</SelectItem>
-                                  <SelectItem value="ar">Ar Condicionado Split</SelectItem>
-                                  <SelectItem value="camara">Câmara Fria Açougue</SelectItem>
+                                <SelectContent className="bg-popover border border-border shadow-lg">
+                                  {tiposItem.map((tipo) => (
+                                    <SelectItem key={tipo.value} value={tipo.value}>
+                                      {tipo.label}
+                                    </SelectItem>
+                                  ))}
                                 </SelectContent>
                               </Select>
-                              <p className="text-xs text-muted-foreground">
-                                Se selecionado, o Plano de Ação já virá preenchido com este ativo.
-                              </p>
                             </div>
-
-                            {/* Obrigatório + Actions */}
-                            <div className="flex items-center justify-between pt-4 border-t border-border">
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium">Obrigatório</span>
-                                <Switch
-                                  checked={item.obrigatorio}
-                                  onCheckedChange={(checked) =>
-                                    updateItem(area.id, item.id, { obrigatorio: checked })
-                                  }
-                                />
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Button variant="outline" onClick={() => setEditingItem(null)}>
-                                  Cancelar
-                                </Button>
-                                <Button onClick={() => setEditingItem(null)}>
-                                  Salvar
-                                </Button>
-                              </div>
+                            <div className="space-y-2.5">
+                              <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                Peso na Pontuação
+                              </Label>
+                              <Input
+                                type="number"
+                                min={1}
+                                max={10}
+                                value={item.peso}
+                                onChange={(e) =>
+                                  updateItem(area.id, item.id, { peso: parseInt(e.target.value) || 1 })
+                                }
+                                className="h-12 bg-muted/50"
+                              />
                             </div>
                           </div>
-                        ) : (
-                          <button
-                            onClick={() => setEditingItem(item.id)}
-                            className="w-full p-4 text-left hover:bg-muted/50 transition-colors"
-                          >
-                            <div className="flex items-start gap-3">
-                              <span className="flex items-center justify-center h-6 w-6 rounded bg-muted text-xs font-medium text-muted-foreground">
-                                {index + 1}
+
+                          {/* Complementos - Card Style */}
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                            <button
+                              onClick={() => toggleComplement(area.id, item.id, 'comentario')}
+                              className={cn(
+                                "flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all",
+                                item.comentario 
+                                  ? "border-primary bg-primary/5 text-primary" 
+                                  : "border-border bg-muted/30 text-muted-foreground hover:border-primary/50"
+                              )}
+                            >
+                              <MessageSquare className="h-6 w-6 mb-2" />
+                              <span className="text-sm font-medium">Comentário</span>
+                            </button>
+                            <button
+                              onClick={() => toggleComplement(area.id, item.id, 'foto')}
+                              className={cn(
+                                "flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all",
+                                item.foto 
+                                  ? "border-primary bg-primary/5 text-primary" 
+                                  : "border-border bg-muted/30 text-muted-foreground hover:border-primary/50"
+                              )}
+                            >
+                              <Camera className="h-6 w-6 mb-2" />
+                              <span className="text-sm font-medium">Foto</span>
+                            </button>
+                            <button
+                              onClick={() => toggleComplement(area.id, item.id, 'planoAcao')}
+                              className={cn(
+                                "flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all",
+                                item.planoAcao 
+                                  ? "border-primary bg-primary/5 text-primary" 
+                                  : "border-border bg-muted/30 text-muted-foreground hover:border-primary/50"
+                              )}
+                            >
+                              <Zap className="h-6 w-6 mb-2" />
+                              <span className="text-sm font-medium">Plano de Ação</span>
+                            </button>
+                            <div className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-border bg-muted/30">
+                              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+                                Obrigatório
                               </span>
-                              <div className="flex-1">
-                                <p className="font-medium text-foreground">{item.pergunta}</p>
-                                <p className="text-sm text-muted-foreground mt-0.5">
-                                  Peso {item.peso}
-                                </p>
-                              </div>
+                              <Switch
+                                checked={item.obrigatorio}
+                                onCheckedChange={(checked) =>
+                                  updateItem(area.id, item.id, { obrigatorio: checked })
+                                }
+                                className="mt-1"
+                              />
                             </div>
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                          </div>
+
+                          {/* Vincular Ativo */}
+                          <div className="p-4 rounded-xl bg-muted/30 border border-border mb-6">
+                            <div className="flex items-center gap-2 mb-3">
+                              <Link2 className="h-4 w-4 text-muted-foreground" />
+                              <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                Vincular Ativo
+                              </Label>
+                            </div>
+                            <Select value={item.ativo || ""} onValueChange={(value) => updateItem(area.id, item.id, { ativo: value })}>
+                              <SelectTrigger className="bg-background">
+                                <SelectValue placeholder="Nenhum ativo vinculado" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-popover border border-border shadow-lg">
+                                <SelectItem value="empilhadeira">Empilhadeira Elétrica</SelectItem>
+                                <SelectItem value="ar">Ar Condicionado Split</SelectItem>
+                                <SelectItem value="camara">Câmara Fria Açougue</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {/* Actions */}
+                          <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
+                            <Button variant="ghost" onClick={() => setEditingItem(null)}>
+                              Cancelar
+                            </Button>
+                            <Button onClick={() => setEditingItem(null)} className="px-6">
+                              Salvar Item
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setEditingItem(item.id)}
+                          className="w-full p-4 text-left transition-colors flex items-center gap-3"
+                        >
+                          <GripVertical className="h-4 w-4 text-muted-foreground/50 cursor-grab" />
+                          <span className="flex items-center justify-center h-7 w-7 rounded-lg bg-primary/10 text-xs font-semibold text-primary">
+                            {index + 1}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-foreground truncate">{item.pergunta}</p>
+                            <div className="flex items-center gap-3 mt-1">
+                              <span className="text-xs text-muted-foreground">
+                                {tiposItem.find(t => t.value === item.tipo)?.label || item.tipo}
+                              </span>
+                              <span className="text-xs text-muted-foreground">•</span>
+                              <span className="text-xs text-muted-foreground">Peso {item.peso}</span>
+                              {item.obrigatorio && (
+                                <>
+                                  <span className="text-xs text-muted-foreground">•</span>
+                                  <span className="text-xs font-medium text-primary">Obrigatório</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            {item.comentario && <MessageSquare className="h-4 w-4 text-muted-foreground" />}
+                            {item.foto && <Camera className="h-4 w-4 text-muted-foreground" />}
+                            {item.planoAcao && <Zap className="h-4 w-4 text-muted-foreground" />}
+                          </div>
+                        </button>
+                      )}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
           ))}
 
           {/* Add Area Button */}
-          <Button variant="outline" className="w-full gap-2 py-6 border-dashed">
+          <Button variant="outline" className="w-full gap-2 py-6 border-dashed border-2 hover:border-primary hover:bg-primary/5">
             <Plus className="h-5 w-5" />
             Adicionar Nova Área
           </Button>
