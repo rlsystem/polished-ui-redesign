@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { MapPin, Clock, Play, Search, Filter, Trash2, X, AlertTriangle } from "lucide-react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -85,12 +86,17 @@ const statusOptions = [
 ];
 
 export default function Auditorias() {
+  const navigate = useNavigate();
   const [auditorias, setAuditorias] = useState<Auditoria[]>(auditoriasIniciais);
   const [busca, setBusca] = useState("");
   const [localFiltro, setLocalFiltro] = useState("Todos");
   const [statusFiltro, setStatusFiltro] = useState("todos");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [auditoriaToDelete, setAuditoriaToDelete] = useState<Auditoria | null>(null);
+
+  const handleExecutar = (auditoria: Auditoria) => {
+    navigate(`/auditorias/${auditoria.id}/executar`);
+  };
 
   const auditoriasFiltradas = auditorias.filter((auditoria) => {
     const matchBusca = auditoria.nome.toLowerCase().includes(busca.toLowerCase()) ||
@@ -215,7 +221,10 @@ export default function Auditorias() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button className="flex-1 gap-2">
+                  <Button 
+                    className="flex-1 gap-2"
+                    onClick={() => handleExecutar(auditoria)}
+                  >
                     <Play className="h-4 w-4" />
                     {auditoria.status === "concluido" ? "Ver Resultado" : "Continuar"}
                   </Button>

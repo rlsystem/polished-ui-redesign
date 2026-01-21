@@ -21,6 +21,7 @@ import {
   LogOut,
   PanelLeftClose,
   PanelLeft,
+  Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -197,6 +198,7 @@ export function AppSidebar({ collapsed = false, onToggle }: AppSidebarProps) {
               label="Gestão de Ativos"
               children={[
                 { to: "/bens-equipamentos", icon: Package, label: "Bens & Equipamentos" },
+                { to: "/selecionar-ativo", icon: Package, label: "Selecionar Ativo" },
                 { to: "/manutencoes", icon: Wrench, label: "Manutenções" },
               ]}
             />
@@ -208,6 +210,7 @@ export function AppSidebar({ collapsed = false, onToggle }: AppSidebarProps) {
               label="Usuários"
               children={[
                 { to: "/usuarios", icon: Users, label: "Lista" },
+                { to: "/registro-ponto", icon: Clock, label: "Registro de Ponto" },
                 { to: "/usuarios/permissoes", icon: Settings, label: "Permissões" },
               ]}
             />
