@@ -18,6 +18,7 @@ import BensEquipamentos from "./pages/BensEquipamentos";
 import NovoPatrimonio from "./pages/NovoPatrimonio";
 import SelecionarAtivo from "./pages/SelecionarAtivo";
 import RegistroPonto from "./pages/RegistroPonto";
+import IndicesRedesSociais from "./pages/IndicesRedesSociais";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 
@@ -46,6 +47,7 @@ const App = () => (
           <Route path="/bens-equipamentos/novo" element={<NovoPatrimonio />} />
           <Route path="/selecionar-ativo" element={<SelecionarAtivo />} />
           <Route path="/registro-ponto" element={<RegistroPonto />} />
+          <Route path="/indices-redes-sociais" element={<IndicesRedesSociais />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
