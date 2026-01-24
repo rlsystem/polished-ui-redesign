@@ -22,6 +22,7 @@ import {
   PanelLeftClose,
   PanelLeft,
   Clock,
+  BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -167,6 +168,7 @@ export function AppSidebar({ collapsed = false, onToggle }: AppSidebarProps) {
         ) : (
           <div className="space-y-1">
             <NavItem to="/" icon={LayoutDashboard} label="Início" />
+            <NavItem to="/indices-redes-sociais" icon={BarChart3} label="Redes Sociais" />
             
             <NavGroup
               icon={Bot}
