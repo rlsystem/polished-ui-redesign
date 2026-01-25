@@ -23,7 +23,6 @@ import {
 import { MainLayout } from "@/components/layout/MainLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -48,10 +47,6 @@ const platformData = {
   instagram: {
     name: "Instagram",
     icon: Instagram,
-    color: "from-pink-500 to-purple-600",
-    accentColor: "text-pink-500",
-    bgAccent: "bg-pink-500/10",
-    borderAccent: "border-pink-500/20",
     overview: {
       seguidores: { value: "52.300", change: "+1.250", positive: true },
       alcance: { value: "385.000", change: "+12.5%", positive: true },
@@ -77,10 +72,6 @@ const platformData = {
   facebook: {
     name: "Facebook",
     icon: Facebook,
-    color: "from-blue-600 to-blue-700",
-    accentColor: "text-blue-500",
-    bgAccent: "bg-blue-500/10",
-    borderAccent: "border-blue-500/20",
     overview: {
       seguidores: { value: "38.500", change: "+820", positive: true },
       alcance: { value: "245.000", change: "+5.2%", positive: true },
@@ -106,10 +97,6 @@ const platformData = {
   tiktok: {
     name: "TikTok",
     icon: TikTokIcon,
-    color: "from-gray-900 to-gray-800",
-    accentColor: "text-gray-900",
-    bgAccent: "bg-gray-900/10",
-    borderAccent: "border-gray-900/20",
     overview: {
       seguidores: { value: "28.700", change: "+3.450", positive: true },
       alcance: { value: "1.250.000", change: "+45.2%", positive: true },
@@ -135,10 +122,6 @@ const platformData = {
   youtube: {
     name: "YouTube",
     icon: Youtube,
-    color: "from-red-600 to-red-700",
-    accentColor: "text-red-500",
-    bgAccent: "bg-red-500/10",
-    borderAccent: "border-red-500/20",
     overview: {
       seguidores: { value: "12.400", change: "+580", positive: true },
       alcance: { value: "185.000", change: "+8.5%", positive: true },
@@ -164,10 +147,6 @@ const platformData = {
   googleads: {
     name: "Google Ads",
     icon: GoogleAdsIcon,
-    color: "from-yellow-500 to-orange-500",
-    accentColor: "text-yellow-600",
-    bgAccent: "bg-yellow-500/10",
-    borderAccent: "border-yellow-500/20",
     overview: {
       seguidores: { value: "-", change: "-", positive: true },
       alcance: { value: "520.000", change: "+15.2%", positive: true },
@@ -195,62 +174,53 @@ const platformData = {
 
 type PlatformKey = keyof typeof platformData;
 
-// Componente de métrica individual premium
-const MetricCard = ({ 
+// Componente de métrica individual - estilo BI clean
+const MetricRow = ({ 
   label, 
   value, 
   change, 
   positive, 
   icon: Icon,
-  accentColor 
 }: { 
   label: string; 
   value: string; 
   change?: string; 
   positive?: boolean;
   icon: React.ElementType;
-  accentColor: string;
 }) => (
-  <div className="flex items-center justify-between py-3.5 border-b border-border/50 last:border-0 group hover:bg-muted/30 px-1 -mx-1 rounded transition-colors">
+  <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
     <div className="flex items-center gap-3">
-      <div className={cn("p-2 rounded-lg", accentColor.replace("text-", "bg-").replace("500", "500/10"))}>
-        <Icon className={cn("h-4 w-4", accentColor)} />
+      <div className="p-2 rounded-md bg-muted">
+        <Icon className="h-4 w-4 text-muted-foreground" />
       </div>
-      <span className="text-sm text-muted-foreground font-medium">{label}</span>
+      <span className="text-sm text-muted-foreground">{label}</span>
     </div>
     <div className="flex items-center gap-2">
-      <span className="text-lg font-bold text-foreground">{value}</span>
+      <span className="text-sm font-semibold text-foreground">{value}</span>
       {change && change !== "-" && (
-        <Badge 
-          variant="outline" 
-          className={cn(
-            "text-xs font-semibold border-0",
-            positive 
-              ? "bg-emerald-500/10 text-emerald-600" 
-              : "bg-rose-500/10 text-rose-600"
-          )}
-        >
-          {positive ? <ArrowUpRight className="h-3 w-3 mr-0.5" /> : <ArrowDownRight className="h-3 w-3 mr-0.5" />}
+        <span className={cn(
+          "text-xs font-medium flex items-center",
+          positive ? "text-success" : "text-destructive"
+        )}>
+          {positive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
           {change}
-        </Badge>
+        </span>
       )}
     </div>
   </div>
 );
 
-// Componente de Top Conteúdo
-const TopContentItem = ({ 
+// Componente de Top Conteúdo - estilo BI clean
+const TopContentRow = ({ 
   title, 
   type, 
   views, 
   index,
-  accentColor 
 }: { 
   title: string; 
   type: string; 
   views: string; 
   index: number;
-  accentColor: string;
 }) => {
   const getIcon = () => {
     switch (type) {
@@ -262,12 +232,11 @@ const TopContentItem = ({
   const Icon = getIcon();
   
   return (
-    <div className="flex items-center gap-3 py-2.5 group">
+    <div className="flex items-center gap-3 py-2.5 border-b border-border last:border-0">
       <div className={cn(
-        "w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold",
-        index === 0 ? "bg-gradient-to-br from-amber-400 to-amber-600 text-white" :
-        index === 1 ? "bg-gradient-to-br from-slate-300 to-slate-500 text-white" :
-        "bg-gradient-to-br from-amber-600 to-amber-800 text-white"
+        "w-6 h-6 rounded flex items-center justify-center text-xs font-semibold",
+        index === 0 ? "bg-primary text-primary-foreground" :
+        "bg-muted text-muted-foreground"
       )}>
         {index + 1}
       </div>
@@ -278,41 +247,36 @@ const TopContentItem = ({
           <span className="capitalize">{type}</span>
         </div>
       </div>
-      <div className={cn("text-sm font-semibold", accentColor)}>{views}</div>
+      <span className="text-sm font-medium text-foreground">{views}</span>
     </div>
   );
 };
 
-// Componente principal de sugestões de IA
-const AISuggestions = ({ platform }: { platform: PlatformKey }) => {
+// Sugestões de IA - estilo BI clean
+const AISuggestions = () => {
   const suggestions = [
     {
       icon: Sparkles,
       title: "Melhor horário para postar",
-      description: "Seus seguidores estão mais ativos às 19h-21h. Considere agendar posts nesse período.",
-      type: "insight"
+      description: "Seus seguidores estão mais ativos às 19h-21h.",
     },
     {
       icon: Target,
       title: "Oportunidade de conteúdo",
-      description: "Reels têm 3x mais engajamento. Aumente a frequência de vídeos curtos.",
-      type: "action"
+      description: "Reels têm 3x mais engajamento. Aumente a frequência.",
     },
     {
       icon: Zap,
       title: "Campanha sugerida",
-      description: "ROI médio de campanhas similares: +280%. Considere investir R$ 500 em remarketing.",
-      type: "opportunity"
+      description: "ROI médio de campanhas similares: +280%.",
     }
   ];
 
   return (
-    <Card className="border-dashed border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+    <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-primary/10">
-            <Sparkles className="h-4 w-4 text-primary" />
-          </div>
+        <CardTitle className="text-sm font-semibold flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-primary" />
           Sugestões da IA
         </CardTitle>
       </CardHeader>
@@ -320,26 +284,16 @@ const AISuggestions = ({ platform }: { platform: PlatformKey }) => {
         {suggestions.map((suggestion, index) => (
           <div 
             key={index}
-            className="flex gap-3 p-3 rounded-lg bg-background/60 border border-border/50 hover:border-primary/30 transition-colors cursor-pointer group"
+            className="flex gap-3 p-3 rounded-md border border-border hover:bg-muted/50 transition-colors cursor-pointer"
           >
-            <div className={cn(
-              "p-2 rounded-lg shrink-0",
-              suggestion.type === "insight" ? "bg-blue-500/10" :
-              suggestion.type === "action" ? "bg-emerald-500/10" :
-              "bg-amber-500/10"
-            )}>
-              <suggestion.icon className={cn(
-                "h-4 w-4",
-                suggestion.type === "insight" ? "text-blue-500" :
-                suggestion.type === "action" ? "text-emerald-500" :
-                "text-amber-500"
-              )} />
+            <div className="p-2 rounded-md bg-primary/10 shrink-0">
+              <suggestion.icon className="h-4 w-4 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+              <p className="text-sm font-medium text-foreground">
                 {suggestion.title}
               </p>
-              <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 {suggestion.description}
               </p>
             </div>
@@ -356,23 +310,23 @@ export default function IndicesRedesSociais() {
   const IconComponent = data.icon;
 
   const platformTabs = [
-    { key: "instagram" as PlatformKey, icon: Instagram, label: "Instagram", color: "text-pink-500", dot: "bg-pink-500" },
-    { key: "facebook" as PlatformKey, icon: Facebook, label: "Facebook", color: "text-blue-600", dot: "bg-blue-600" },
-    { key: "tiktok" as PlatformKey, icon: TikTokIcon, label: "TikTok", color: "text-gray-900", dot: "bg-gray-900" },
-    { key: "youtube" as PlatformKey, icon: Youtube, label: "YouTube", color: "text-red-500", dot: "bg-red-500" },
-    { key: "googleads" as PlatformKey, icon: GoogleAdsIcon, label: "Google Ads", color: "text-yellow-600", dot: "bg-yellow-500" },
+    { key: "instagram" as PlatformKey, icon: Instagram, label: "Instagram" },
+    { key: "facebook" as PlatformKey, icon: Facebook, label: "Facebook" },
+    { key: "tiktok" as PlatformKey, icon: TikTokIcon, label: "TikTok" },
+    { key: "youtube" as PlatformKey, icon: Youtube, label: "YouTube" },
+    { key: "googleads" as PlatformKey, icon: GoogleAdsIcon, label: "Google Ads" },
   ];
 
   return (
     <MainLayout>
       <PageHeader
         title="Índices de Redes Sociais"
-        description="Análise detalhada de performance por plataforma"
+        description="Análise de performance por plataforma"
       />
 
-      {/* Platform Tabs Premium */}
-      <Card className="mb-6 overflow-hidden">
-        <div className="p-1.5 bg-muted/30">
+      {/* Platform Tabs - estilo BI clean */}
+      <Card className="mb-6">
+        <div className="p-1 border-b border-border">
           <div className="flex gap-1 overflow-x-auto">
             {platformTabs.map((tab) => {
               const TabIcon = tab.icon;
@@ -382,14 +336,13 @@ export default function IndicesRedesSociais() {
                   key={tab.key}
                   onClick={() => setActivePlatform(tab.key)}
                   className={cn(
-                    "flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap",
+                    "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap",
                     isActive 
-                      ? "bg-background shadow-sm text-foreground" 
-                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                      ? "bg-primary text-primary-foreground" 
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   )}
                 >
-                  <span className={cn("w-2 h-2 rounded-full", tab.dot, !isActive && "opacity-50")} />
-                  <TabIcon className={cn("h-4 w-4", isActive ? tab.color : "")} />
+                  <TabIcon className="h-4 w-4" />
                   <span>{tab.label}</span>
                 </button>
               );
@@ -399,105 +352,97 @@ export default function IndicesRedesSociais() {
       </Card>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         
         {/* Coluna 1: Visão Geral */}
-        <Card className="lg:col-span-1 overflow-hidden">
-          <CardHeader className="pb-2 border-b border-border/50">
-            <CardTitle className="text-base font-semibold flex items-center gap-3">
-              <div className={cn("p-2 rounded-xl bg-gradient-to-br", data.color)}>
-                <IconComponent className="h-5 w-5 text-white" />
+        <Card>
+          <CardHeader className="pb-3 border-b border-border">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <div className="p-1.5 rounded-md bg-primary/10">
+                <IconComponent className="h-4 w-4 text-primary" />
               </div>
               Visão Geral
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-2">
-            <MetricCard 
+          <CardContent className="pt-3">
+            <MetricRow 
               label="Seguidores Totais" 
               value={data.overview.seguidores.value}
               change={data.overview.seguidores.change}
               positive={data.overview.seguidores.positive}
               icon={Users}
-              accentColor={data.accentColor}
             />
-            <MetricCard 
+            <MetricRow 
               label="Crescimento" 
               value={data.overview.seguidores.change}
               positive={data.overview.seguidores.positive}
               icon={TrendingUp}
-              accentColor={data.accentColor}
             />
-            <MetricCard 
+            <MetricRow 
               label="Alcance Total" 
               value={data.overview.alcance.value}
               change={data.overview.alcance.change}
               positive={data.overview.alcance.positive}
               icon={Eye}
-              accentColor={data.accentColor}
             />
-            <MetricCard 
+            <MetricRow 
               label="Engajamento" 
               value={data.overview.engajamento.value}
               change={data.overview.engajamento.change}
               positive={data.overview.engajamento.positive}
               icon={Heart}
-              accentColor={data.accentColor}
             />
-            <MetricCard 
+            <MetricRow 
               label="Conteúdos" 
               value={data.overview.conteudos.value}
               change={data.overview.conteudos.change}
               positive={data.overview.conteudos.positive}
               icon={FileText}
-              accentColor={data.accentColor}
             />
           </CardContent>
         </Card>
 
         {/* Coluna 2: Performance de Conteúdo */}
-        <Card className="lg:col-span-1 overflow-hidden bg-gradient-to-br from-blue-600 to-indigo-700 text-white border-0">
-          <CardHeader className="pb-3 border-b border-white/10">
-            <CardTitle className="text-base font-semibold flex items-center gap-3 text-white">
-              <div className="p-2 rounded-xl bg-white/20 backdrop-blur">
-                <BarChart3 className="h-5 w-5 text-white" />
+        <Card>
+          <CardHeader className="pb-3 border-b border-border">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <div className="p-1.5 rounded-md bg-primary/10">
+                <BarChart3 className="h-4 w-4 text-primary" />
               </div>
               Performance de Conteúdo
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-4">
+          <CardContent className="pt-3">
             {/* Métricas principais */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="text-center p-4 rounded-xl bg-white/10 backdrop-blur">
-                <p className="text-xs text-white/70 mb-1 font-medium">Alcance/Post</p>
-                <p className="text-2xl font-bold">{data.performance.alcancePost}</p>
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="p-3 rounded-md bg-muted/50 text-center">
+                <p className="text-xs text-muted-foreground mb-1">Alcance/Post</p>
+                <p className="text-lg font-bold text-foreground">{data.performance.alcancePost}</p>
               </div>
-              <div className="text-center p-4 rounded-xl bg-white/10 backdrop-blur">
-                <p className="text-xs text-white/70 mb-1 font-medium">Engajamento/Post</p>
-                <p className="text-2xl font-bold">{data.performance.engajamentoPost}</p>
+              <div className="p-3 rounded-md bg-muted/50 text-center">
+                <p className="text-xs text-muted-foreground mb-1">Engajamento/Post</p>
+                <p className="text-lg font-bold text-foreground">{data.performance.engajamentoPost}</p>
               </div>
             </div>
             
-            {/* Taxa de Engajamento Highlight */}
-            <div className="p-4 rounded-xl bg-white/10 backdrop-blur mb-6 text-center">
-              <p className="text-xs text-white/70 mb-1 font-medium">Taxa de Engajamento</p>
-              <p className="text-3xl font-bold text-emerald-300">{data.performance.taxaEngajamento}</p>
+            {/* Taxa de Engajamento */}
+            <div className="p-3 rounded-md bg-primary/5 border border-primary/10 text-center mb-4">
+              <p className="text-xs text-muted-foreground mb-1">Taxa de Engajamento</p>
+              <p className="text-2xl font-bold text-primary">{data.performance.taxaEngajamento}</p>
             </div>
 
             {/* Top Conteúdos */}
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 mb-3">
-                <Badge className="bg-amber-400/20 text-amber-300 border-amber-400/30 hover:bg-amber-400/30">
-                  Top Conteúdos
-                </Badge>
-              </div>
+            <div>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                Top Conteúdos
+              </p>
               {data.topContent.map((content, index) => (
-                <TopContentItem 
+                <TopContentRow 
                   key={index}
                   title={content.title}
                   type={content.type}
                   views={content.views}
                   index={index}
-                  accentColor="text-white"
                 />
               ))}
             </div>
@@ -505,22 +450,22 @@ export default function IndicesRedesSociais() {
         </Card>
 
         {/* Coluna 3: Anúncios & Campanhas */}
-        <Card className="lg:col-span-1 overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 text-white border-0">
-          <CardHeader className="pb-3 border-b border-white/10 flex flex-row items-center justify-between">
-            <CardTitle className="text-base font-semibold flex items-center gap-3 text-white">
-              <div className="p-2 rounded-xl bg-primary/20 backdrop-blur">
-                <Megaphone className="h-5 w-5 text-primary" />
+        <Card>
+          <CardHeader className="pb-3 border-b border-border flex flex-row items-center justify-between">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <div className="p-1.5 rounded-md bg-primary/10">
+                <Megaphone className="h-4 w-4 text-primary" />
               </div>
               Anúncios & Campanhas
             </CardTitle>
-            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+            <Badge variant="outline" className="text-xs font-medium text-success border-success/30 bg-success/10">
               Ativas
             </Badge>
           </CardHeader>
-          <CardContent className="pt-4">
+          <CardContent className="pt-3">
             {/* Tabela de campanhas */}
-            <div className="space-y-1 mb-6">
-              <div className="grid grid-cols-4 gap-2 text-xs text-white/50 font-medium pb-2 border-b border-white/10">
+            <div className="mb-4">
+              <div className="grid grid-cols-4 gap-2 text-xs text-muted-foreground font-medium pb-2 border-b border-border">
                 <span className="col-span-1">Campanha</span>
                 <span className="text-right">Alcance</span>
                 <span className="text-right">Valor</span>
@@ -529,32 +474,32 @@ export default function IndicesRedesSociais() {
               {data.campaigns.map((campaign, index) => (
                 <div 
                   key={index} 
-                  className="grid grid-cols-4 gap-2 py-3 border-b border-white/5 last:border-0 hover:bg-white/5 rounded transition-colors"
+                  className="grid grid-cols-4 gap-2 py-2.5 border-b border-border last:border-0"
                 >
-                  <span className="col-span-1 text-sm font-medium text-white truncate">{campaign.name}</span>
-                  <span className="text-right text-sm text-white/80">{campaign.reach}</span>
-                  <span className="text-right text-sm text-white/80">{campaign.value}</span>
-                  <span className="text-right text-sm font-semibold text-emerald-400">{campaign.roi}</span>
+                  <span className="col-span-1 text-sm font-medium text-foreground truncate">{campaign.name}</span>
+                  <span className="text-right text-sm text-muted-foreground">{campaign.reach}</span>
+                  <span className="text-right text-sm text-muted-foreground">{campaign.value}</span>
+                  <span className="text-right text-sm font-semibold text-success">{campaign.roi}</span>
                 </div>
               ))}
             </div>
 
             {/* Total Investido */}
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+            <div className="p-3 rounded-md bg-muted/50 border border-border">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5 text-primary" />
-                  <span className="text-sm text-white/70 font-medium">Total Investido</span>
+                  <DollarSign className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Total Investido</span>
                 </div>
-                <span className="text-xl font-bold text-white">{data.totalInvested}</span>
+                <span className="text-lg font-bold text-foreground">{data.totalInvested}</span>
               </div>
             </div>
 
             {/* ROI Médio */}
-            <div className="mt-4 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+            <div className="mt-3 p-3 rounded-md bg-success/5 border border-success/20">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-emerald-300 font-medium">ROI Médio das Campanhas</span>
-                <span className="text-lg font-bold text-emerald-400">
+                <span className="text-sm text-muted-foreground">ROI Médio</span>
+                <span className="text-lg font-bold text-success">
                   +{Math.round(data.campaigns.reduce((acc, c) => acc + parseInt(c.roi.replace(/[^0-9]/g, "")), 0) / data.campaigns.length)}%
                 </span>
               </div>
@@ -564,20 +509,20 @@ export default function IndicesRedesSociais() {
       </div>
 
       {/* Sugestões de IA */}
-      <div className="mt-6">
-        <AISuggestions platform={activePlatform} />
+      <div className="mt-4">
+        <AISuggestions />
       </div>
 
       {/* Comparativo Rápido */}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-primary" />
-            Comparativo Rápido entre Plataformas
+      <Card className="mt-4">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+            <BarChart3 className="h-4 w-4 text-primary" />
+            Comparativo entre Plataformas
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {platformTabs.map((platform) => {
               const pData = platformData[platform.key];
               const PIcon = platform.icon;
@@ -585,29 +530,29 @@ export default function IndicesRedesSociais() {
                 <div 
                   key={platform.key}
                   className={cn(
-                    "p-4 rounded-xl border transition-all cursor-pointer hover:shadow-md",
+                    "p-3 rounded-md border transition-colors cursor-pointer",
                     activePlatform === platform.key 
                       ? "border-primary bg-primary/5" 
-                      : "border-border hover:border-primary/50"
+                      : "border-border hover:border-primary/50 hover:bg-muted/50"
                   )}
                   onClick={() => setActivePlatform(platform.key)}
                 >
                   <div className="flex items-center gap-2 mb-3">
-                    <PIcon className={cn("h-5 w-5", platform.color)} />
-                    <span className="text-sm font-medium">{platform.label}</span>
+                    <PIcon className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium text-foreground">{platform.label}</span>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <div className="flex justify-between text-xs">
                       <span className="text-muted-foreground">Seguidores</span>
-                      <span className="font-semibold">{pData.overview.seguidores.value}</span>
+                      <span className="font-medium text-foreground">{pData.overview.seguidores.value}</span>
                     </div>
                     <div className="flex justify-between text-xs">
                       <span className="text-muted-foreground">Engajamento</span>
-                      <span className="font-semibold text-emerald-600">{pData.performance.taxaEngajamento}</span>
+                      <span className="font-medium text-success">{pData.performance.taxaEngajamento}</span>
                     </div>
                     <div className="flex justify-between text-xs">
                       <span className="text-muted-foreground">Investido</span>
-                      <span className="font-semibold">{pData.totalInvested}</span>
+                      <span className="font-medium text-foreground">{pData.totalInvested}</span>
                     </div>
                   </div>
                 </div>
