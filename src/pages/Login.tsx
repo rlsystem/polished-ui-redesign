@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, LogIn, Building2, Shield } from "lucide-react";
+import { Eye, EyeOff, LogIn, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,7 +17,6 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simular login
     setTimeout(() => {
       setIsLoading(false);
       navigate("/");
@@ -25,44 +24,44 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex bg-background">
       {/* Left Side - Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-background">
-        <div className="w-full max-w-md space-y-8">
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="w-full max-w-sm space-y-6">
           {/* Logo */}
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 mb-6">
-              <Building2 className="h-8 w-8 text-primary" />
+          <div className="text-center space-y-2">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-primary text-primary-foreground">
+              <Building2 className="h-6 w-6" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground">
+            <h1 className="text-xl font-semibold text-foreground">
               Sistema de Gestão
             </h1>
-            <p className="text-muted-foreground mt-2">
-              Faça login para acessar o sistema
+            <p className="text-sm text-muted-foreground">
+              Faça login para continuar
             </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="email">E-mail</Label>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-sm">E-mail</Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="seu@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-11"
+                className="h-10"
                 required
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">Senha</Label>
+                <Label htmlFor="password" className="text-sm">Senha</Label>
                 <button
                   type="button"
-                  className="text-sm text-primary hover:text-primary/80 transition-colors"
+                  className="text-xs text-primary hover:underline"
                 >
                   Esqueceu a senha?
                 </button>
@@ -74,13 +73,13 @@ export default function Login() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-11 pr-11"
+                  className="h-10 pr-10"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -104,55 +103,55 @@ export default function Login() {
 
             <Button
               type="submit"
-              className="w-full h-11 gap-2"
+              className="w-full h-10"
               disabled={isLoading}
             >
               {isLoading ? (
                 <div className="h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
               ) : (
-                <LogIn className="h-4 w-4" />
+                <>
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Entrar
+                </>
               )}
-              {isLoading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
 
           {/* Footer */}
-          <div className="text-center text-sm text-muted-foreground">
-            <p>
-              Problemas para acessar?{" "}
-              <button className="text-primary hover:text-primary/80 transition-colors">
-                Contate o suporte
-              </button>
-            </p>
-          </div>
+          <p className="text-center text-xs text-muted-foreground">
+            Problemas para acessar?{" "}
+            <button className="text-primary hover:underline">
+              Contate o suporte
+            </button>
+          </p>
         </div>
       </div>
 
       {/* Right Side - Branding */}
-      <div className="hidden lg:flex flex-1 items-center justify-center p-12 bg-gradient-to-br from-primary to-primary/80">
-        <div className="max-w-lg text-center text-primary-foreground">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-sm mb-8">
-            <Shield className="h-10 w-10" />
+      <div className="hidden lg:flex flex-1 items-center justify-center p-12 bg-primary">
+        <div className="max-w-md text-center text-primary-foreground space-y-6">
+          <Building2 className="h-12 w-12 mx-auto opacity-90" />
+          <div className="space-y-2">
+            <h2 className="text-2xl font-semibold">
+              Gestão Completa e Integrada
+            </h2>
+            <p className="text-sm opacity-80 leading-relaxed">
+              Auditorias, manutenções, planos de ação e muito mais em um só lugar.
+              Controle total das operações da sua empresa.
+            </p>
           </div>
-          <h2 className="text-3xl font-bold mb-4">
-            Gestão Completa e Integrada
-          </h2>
-          <p className="text-lg opacity-90 mb-8">
-            Auditorias, manutenções, planos de ação e muito mais em um só lugar.
-            Tenha controle total das operações da sua empresa.
-          </p>
-          <div className="grid grid-cols-3 gap-6 text-center">
-            <div className="p-4 rounded-xl bg-white/10 backdrop-blur-sm">
+          <div className="grid grid-cols-3 gap-4 pt-4">
+            <div className="p-4 rounded-lg bg-primary-foreground/10">
               <div className="text-2xl font-bold">1.2k+</div>
-              <div className="text-sm opacity-80">Auditorias</div>
+              <div className="text-xs opacity-70">Auditorias</div>
             </div>
-            <div className="p-4 rounded-xl bg-white/10 backdrop-blur-sm">
+            <div className="p-4 rounded-lg bg-primary-foreground/10">
               <div className="text-2xl font-bold">350+</div>
-              <div className="text-sm opacity-80">Manutenções</div>
+              <div className="text-xs opacity-70">Manutenções</div>
             </div>
-            <div className="p-4 rounded-xl bg-white/10 backdrop-blur-sm">
+            <div className="p-4 rounded-lg bg-primary-foreground/10">
               <div className="text-2xl font-bold">98%</div>
-              <div className="text-sm opacity-80">Conformidade</div>
+              <div className="text-xs opacity-70">Conformidade</div>
             </div>
           </div>
         </div>
